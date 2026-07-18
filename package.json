@@ -18,6 +18,11 @@
       "icon": "fitdb_icon.ico",
       "target": "nsis"
     },
+    "nsis": {
+      "createDesktopShortcut": "always",
+      "createStartMenuShortcut": true,
+      "shortcutName": "FitAI Studio"
+    },
     "files": [
       "main.js",
       "fitdb_icon.ico",
