@@ -4,14 +4,11 @@ echo ===================================
 echo   Starting FitDB (FitAI Coach)
 echo ===================================
 
-echo [1/2] Starting Backend Server...
-start "FitDB Backend" cmd /k "cd /d E:\exercises-dataset && node backend/server.js"
-
-echo [2/2] Starting Frontend Server...
-start "FitDB Frontend" cmd /k "cd /d E:\exercises-dataset\frontend && npm run dev"
+echo Starting Backend and Frontend Servers together...
+start "FitDB" cmd /k "cd /d E:\exercises-dataset && npm start"
 
 echo Waiting for services to initialize...
-timeout /t 3 /nobreak > NUL
+timeout /t 5 /nobreak > NUL
 
 echo Opening Browser...
 start http://localhost:5173

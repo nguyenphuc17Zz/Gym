@@ -1,0 +1,13 @@
+{
+  "name": "fitdb-root",
+  "version": "1.0.0",
+  "description": "Root package for FitDB to run frontend and backend concurrently",
+  "scripts": {
+    "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
+    "start:backend": "cd backend && node server.js",
+    "start:frontend": "cd frontend && npm run dev"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.3"
+  }
+}
