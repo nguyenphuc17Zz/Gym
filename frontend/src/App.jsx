@@ -16,6 +16,7 @@ function App() {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedEquipment, setSelectedEquipment] = useState('');
   const [selectedBodyPart, setSelectedBodyPart] = useState('');
+  const [sortBy, setSortBy] = useState('viewed_desc');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -87,6 +88,20 @@ function App() {
     }
   };
 
+  const handleExerciseClick = async (exercise) => {
+    setSelectedExercise(exercise);
+    if (!exercise.isAiGenerated && exercise.id) {
+       try {
+          await axios.post(`http://localhost:3001/api/exercises/${exercise.id}/view`);
+          if (sortBy === 'viewed_desc') {
+             fetchExercises(true);
+          }
+       } catch (error) {
+          console.error('Failed to update view time', error);
+       }
+    }
+  };
+
   const fetchFilters = async () => {
     try {
       const res = await axios.get('http://localhost:3001/api/filters');
@@ -117,6 +132,7 @@ function App() {
           equipment: selectedEquipment,
           body_part: selectedBodyPart,
           search,
+          sort: sortBy,
           page: currentPage,
           limit: 20
         }
@@ -148,7 +164,7 @@ function App() {
       fetchExercises(true);
     }, 300);
     return () => clearTimeout(delayDebounceFn);
-  }, [selectedCategory, selectedEquipment, selectedBodyPart, search]);
+  }, [selectedCategory, selectedEquipment, selectedBodyPart, search, sortBy]);
 
   // Effect for infinite scroll
   useEffect(() => {
@@ -221,6 +237,13 @@ function App() {
               <option key={eq} value={eq}>{eq}</option>
             ))}
           </select>
+
+          <select className="filter-select" value={sortBy} onChange={e => setSortBy(e.target.value)} style={{background: 'var(--surface-hover)', borderColor: 'var(--primary-color)'}}>
+            <option value="viewed_desc">👀 Vừa xem gần đây</option>
+            <option value="updated_desc">⏱️ Vừa cập nhật</option>
+            <option value="created_desc">🆕 Mới tạo gần đây</option>
+            <option value="name_asc">🔤 Tên A-Z</option>
+          </select>
         </div>
       </section>
 
@@ -230,7 +253,7 @@ function App() {
             <ExerciseCard 
               key={exercise.id} 
               exercise={exercise} 
-              onClick={setSelectedExercise}
+              onClick={handleExerciseClick}
             />
           ))}
           {loading && exercises.length === 0 && skeletonArray.map((_, i) => (

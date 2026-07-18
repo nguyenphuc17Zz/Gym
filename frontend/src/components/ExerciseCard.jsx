@@ -46,6 +46,14 @@ const ExerciseCard = ({ exercise, onClick }) => {
              {exercise.target}
           </span>
         </div>
+        {(exercise.created_at || exercise.updated_at) && (
+          <div style={{marginTop: '0.8rem', fontSize: '0.7rem', color: 'var(--text-secondary)', display: 'flex', gap: '0.5rem'}}>
+            {exercise.created_at && <span>Tạo: {new Date(exercise.created_at).toLocaleDateString('vi-VN')}</span>}
+            {exercise.updated_at && exercise.updated_at !== exercise.created_at && (
+              <span style={{color: '#3b82f6'}}>• Cập nhật: {new Date(exercise.updated_at).toLocaleDateString('vi-VN')}</span>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

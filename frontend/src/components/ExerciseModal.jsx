@@ -6,9 +6,17 @@ const ExerciseModal = ({ exercise, onClose, onExerciseUpdated }) => {
   const [localExercise, setLocalExercise] = useState(null);
   const [isEditingVideo, setIsEditingVideo] = useState(false);
   const [videoInput, setVideoInput] = useState('');
+  const [activeTab, setActiveTab] = useState('dataset');
 
   useEffect(() => {
     setLocalExercise(exercise);
+    if (exercise) {
+       if (!exercise.gif_url && exercise.youtube_id) {
+           setActiveTab('youtube');
+       } else {
+           setActiveTab('dataset');
+       }
+    }
   }, [exercise]);
 
   if (!localExercise) return null;
@@ -79,45 +87,68 @@ const ExerciseModal = ({ exercise, onClose, onExerciseUpdated }) => {
           <X size={20} />
         </button>
         
-        <div className="modal-media">
-          {isEditingVideo ? (
-            <div className="video-edit-container">
-               <h4 style={{color: 'white', margin: '0 0 1rem 0'}}>Đổi Link YouTube</h4>
-               <input 
-                 type="text" 
-                 placeholder="Dán link YouTube (VD: https://youtube.com/watch?v=...)" 
-                 value={videoInput}
-                 onChange={e => setVideoInput(e.target.value)}
-                 className="settings-input premium-input"
-                 style={{marginBottom: '1rem'}}
-               />
-               <div style={{display: 'flex', gap: '0.5rem'}}>
-                 <button className="save-btn premium-btn" style={{flex: 1, margin: 0, padding: '0.75rem'}} onClick={handleUpdateVideo}><Save size={16}/> Lưu Link</button>
-                 <button className="close-btn" style={{position: 'static', background: 'rgba(255,255,255,0.1)', color: 'white', width: 'auto', padding: '0 1rem', borderRadius: '8px'}} onClick={() => setIsEditingVideo(false)}>Huỷ</button>
-               </div>
-            </div>
-          ) : localExercise.gif_url ? (
-            <img src={`http://localhost:3001/${localExercise.gif_url}`} alt={localExercise.name} />
-          ) : localExercise.youtube_id ? (
-            <div style={{position: 'relative', width: '100%', height: '100%'}}>
-              <button className="edit-video-btn" onClick={() => { setIsEditingVideo(true); setVideoInput(''); }}><Edit3 size={16}/></button>
-              <iframe 
-                width="100%" 
-                height="100%" 
-                style={{ minHeight: '300px', display: 'block' }}
-                src={`https://www.youtube.com/embed/${localExercise.youtube_id}?autoplay=1`} 
-                title={localExercise.name}
-                frameBorder="0" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                allowFullScreen
-              ></iframe>
-            </div>
-          ) : (
-            <div className="fallback-media-large">
-              <button className="edit-video-btn text-btn" onClick={() => { setIsEditingVideo(true); setVideoInput(''); }}><Edit3 size={16}/> Thêm Video</button>
-              <span className="fallback-icon-large">✨ AI Generated</span>
-            </div>
-          )}
+        <div className="modal-media" style={{ display: 'flex', flexDirection: 'column' }}>
+          <div className="media-tabs" style={{width: '100%'}}>
+            {localExercise.gif_url && (
+              <button 
+                className={`media-tab-btn ${activeTab === 'dataset' ? 'active' : ''}`} 
+                onClick={() => setActiveTab('dataset')}
+              >
+                📸 Ảnh Gốc
+              </button>
+            )}
+            <button 
+              className={`media-tab-btn ${activeTab === 'youtube' ? 'active' : ''}`} 
+              onClick={() => setActiveTab('youtube')}
+            >
+              📺 YouTube Video
+            </button>
+          </div>
+
+          <div className="media-content-area" style={{ flex: 1, width: '100%', position: 'relative', background: activeTab === 'dataset' ? '#fff' : '#000' }}>
+            {activeTab === 'dataset' ? (
+              <img 
+                src={`http://localhost:3001/${localExercise.gif_url}`} 
+                alt={localExercise.name} 
+                style={{width: '100%', height: '100%', objectFit: 'contain'}} 
+              />
+            ) : isEditingVideo ? (
+              <div className="video-edit-container">
+                 <h4 style={{color: 'white', margin: '0 0 1rem 0'}}>Đổi Link YouTube</h4>
+                 <input 
+                   type="text" 
+                   placeholder="Dán link YouTube (VD: https://youtube.com/watch?v=...)" 
+                   value={videoInput}
+                   onChange={e => setVideoInput(e.target.value)}
+                   className="settings-input premium-input"
+                   style={{marginBottom: '1rem'}}
+                 />
+                 <div style={{display: 'flex', gap: '0.5rem'}}>
+                   <button className="save-btn premium-btn" style={{flex: 1, margin: 0, padding: '0.75rem'}} onClick={handleUpdateVideo}><Save size={16}/> Lưu Link</button>
+                   <button className="close-btn" style={{position: 'static', background: 'rgba(255,255,255,0.1)', color: 'white', width: 'auto', padding: '0 1rem', borderRadius: '8px'}} onClick={() => setIsEditingVideo(false)}>Huỷ</button>
+                 </div>
+              </div>
+            ) : localExercise.youtube_id ? (
+              <div style={{position: 'relative', width: '100%', height: '100%'}}>
+                <button className="edit-video-btn" onClick={() => { setIsEditingVideo(true); setVideoInput(''); }}><Edit3 size={16}/></button>
+                <iframe 
+                  width="100%" 
+                  height="100%" 
+                  style={{ minHeight: '300px', display: 'block' }}
+                  src={`https://www.youtube.com/embed/${localExercise.youtube_id}?autoplay=1`} 
+                  title={localExercise.name}
+                  frameBorder="0" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowFullScreen
+                ></iframe>
+              </div>
+            ) : (
+              <div className="fallback-media-large">
+                <button className="edit-video-btn text-btn" onClick={() => { setIsEditingVideo(true); setVideoInput(''); }}><Edit3 size={16}/> Thêm Video</button>
+                <span className="fallback-icon-large">✨ Trống</span>
+              </div>
+            )}
+          </div>
         </div>
         
         <div className="modal-details">

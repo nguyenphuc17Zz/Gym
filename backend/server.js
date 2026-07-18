@@ -22,7 +22,7 @@ const pool = mysql.createPool({
 // GET all exercises with pagination and optional filters
 app.get('/api/exercises', async (req, res) => {
     try {
-        const { category, equipment, body_part, search, page = 1, limit = 20 } = req.query;
+        const { category, equipment, body_part, search, sort, page = 1, limit = 20 } = req.query;
         let query = 'SELECT * FROM exercises WHERE 1=1';
         let countQuery = 'SELECT COUNT(*) as total FROM exercises WHERE 1=1';
         const params = [];
@@ -61,6 +61,16 @@ app.get('/api/exercises', async (req, res) => {
         // Execute count
         const [countResult] = await pool.query(countQuery, countParams);
         const total = countResult[0].total;
+
+        if (sort === 'created_desc') {
+            query += ' ORDER BY created_at DESC';
+        } else if (sort === 'updated_desc') {
+            query += ' ORDER BY updated_at DESC';
+        } else if (sort === 'viewed_desc') {
+            query += ' ORDER BY last_viewed_at DESC, name ASC';
+        } else {
+            query += ' ORDER BY name ASC';
+        }
 
         // Add limit and offset
         query += ' LIMIT ? OFFSET ?';
@@ -230,6 +240,18 @@ app.put('/api/exercises/:id/youtube', async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Failed to update video' });
+    }
+});
+
+// POST to update last_viewed_at
+app.post('/api/exercises/:id/view', async (req, res) => {
+    try {
+        const { id } = req.params;
+        await pool.execute('UPDATE exercises SET last_viewed_at = CURRENT_TIMESTAMP WHERE id = ?', [id]);
+        res.json({ success: true });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to update view' });
     }
 });
 
