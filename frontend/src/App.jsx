@@ -189,7 +189,7 @@ function App() {
       <header className="header">
         <h1 className="logo">
           <Dumbbell size={28} />
-          FitDB <span style={{fontSize: '1rem', marginLeft: '0.5rem', opacity: 0.7}}>V2</span>
+          FitAI <span style={{fontSize: '1rem', marginLeft: '0.5rem', opacity: 0.7}}>Studio</span>
         </h1>
         <div style={{display: 'flex', gap: '1rem', alignItems: 'center'}}>
           <button className="theme-toggle" onClick={() => setShowSettings(true)} aria-label="Settings">

@@ -8,6 +8,7 @@
     "start:frontend": "cd frontend && npm run dev"
   },
   "devDependencies": {
-    "concurrently": "^10.0.3"
+    "concurrently": "^10.0.3",
+    "png-to-ico": "^3.0.2"
   }
 }
