@@ -259,6 +259,12 @@ app.post('/api/exercises/:id/view', async (req, res) => {
 app.use('/images', express.static(path.join(__dirname, '../images')));
 app.use('/videos', express.static(path.join(__dirname, '../videos')));
 
+// Serve frontend static files
+app.use(express.static(path.join(__dirname, '../frontend/dist')));
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
+});
+
 const PORT = 3001;
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
